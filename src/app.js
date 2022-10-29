@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const { rmSync } = require('fs');
 
 console.log(__dirname);
 console.log(path.join(__dirname, '../public'));
@@ -31,6 +32,21 @@ app.get('/help', (req, res) => {
     helpText: 'Please contact to',
     title: 'Help',
     name: 'HIS',
+  });
+});
+app.get('/help/*', (req, res) => {
+  res.render('404', {
+    title: '404',
+    name: 'HIS',
+    errorMessage: 'Help article not found',
+  });
+});
+
+app.get('*', (req, res) => {
+  res.render('404', {
+    title: '404',
+    name: 'HIS',
+    errorMessage: 'Page not found',
   });
 });
 
