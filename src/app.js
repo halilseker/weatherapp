@@ -23,7 +23,17 @@ app.use(express.static(publicDirectoryPath));
 app.get('', (req, res) => {
   res.render('index', { title: 'Weather App', name: 'HIS' });
 });
-
+app.get('/weather', (req, res) => {
+  // console.log(req.query);
+  if (!req.query.address) {
+    return res.send({ error: 'Please provide address' });
+  }
+  res.send({
+    forecast: 'Rainy',
+    location: 'Guarda',
+    address: req.query.address,
+  });
+});
 app.get('/about', (req, res) => {
   res.render('about', { title: 'About', name: 'HIS' });
 });
