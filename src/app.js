@@ -11,6 +11,8 @@ const app = express();
 const publicDirectoryPath = path.join(__dirname, '../public');
 const viewsPath = path.join(__dirname, '../templates/views');
 const partialsPath = path.join(__dirname, '../templates/partials');
+const geolocation = require('./utils/geolocation');
+const forecast = require('./utils/forecast');
 
 //Setup handlbars engine and views location
 app.set('view engine', 'hbs');
@@ -28,11 +30,30 @@ app.get('/weather', (req, res) => {
   if (!req.query.address) {
     return res.send({ error: 'Please provide address' });
   }
-  res.send({
-    forecast: 'Rainy',
-    location: 'Guarda',
-    address: req.query.address,
-  });
+  geolocation(
+    req.query.address,
+    (error, { longitude, latitude, location } = {}) => {
+      if (error) {
+        return res.send({ error });
+      }
+      forecast(latitude, longitude, (error, forecastData) => {
+        if (error) {
+          return res.send({ error });
+        }
+        res.send({
+          forecast: forecastData,
+          location, //shorthand
+          address: req.query.address,
+        });
+      });
+    }
+  );
+
+  // res.send({
+  //   forecast: 'Rainy',
+  //   location: 'Guarda',
+  //   address: req.query.address,
+  // });
 });
 app.get('/about', (req, res) => {
   res.render('about', { title: 'About', name: 'HIS' });
